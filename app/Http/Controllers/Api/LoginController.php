@@ -6,35 +6,51 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $this->validateLogin($request);
 
-        if(Auth::attempt($request->only('email', 'password'))){
-            return response()->json([
-                'token'=>$request->user()->createtoken($request->name)->plainTextToken,
-                'message'=>'Success'
-            ]);
+        $response = Http::post('https://thirsty-feynman.82-223-161-36.plesk.page/api/login', [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+        if ($response->status() == 200) {
+            $data = $response->json();
+            $token = $data['token'];
+
+            // Almacenar el token en una variable de sesión
+            session(['auth_token' => $token]);
+            //dd($data);
+
+            // Almacenar el nombre del usuario en una variable de sesión
+
+            return redirect('/adminDashboard');
         }
-        return response()->json([
-            'message'=>'Unauthorized'
-        ], 401);
     }
 
     public function validateLogin(Request $request){
         return $request->validate([
-            'name'=>'required',
             'email'=>'required|email',
             'password'=>'required'
         ]);
     }
 
-    public function logout(){
-        auth()->user()->tokens()->delete();
-        return[
-            'message'=>'Adiós'
-        ];
+    public function logout(Request $request)
+    {
+            dd($response->status());
+            if ($response->status() == 200) {
+                session()->forget('auth_token');
+                auth()->logout();
+            }
+
+        return redirect('/login')->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 }

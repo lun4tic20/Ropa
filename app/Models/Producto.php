@@ -13,10 +13,11 @@ class Producto extends Model
         'nombre',
         'descripcion',
         'precio',
-        'cantidad'
+        'cantidad',
+        'proveedor_id'
     ];
 
-    public function proveedors(){
+    public function proveedor(){
         return $this->belongsTo(Proveedor::class);
     }
 }
