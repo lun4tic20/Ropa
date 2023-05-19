@@ -14,7 +14,11 @@
     <body>
         <div class="container">
 
-
+            @if ($mensaje)
+            <div class="alert alert-info" role="alert">
+                {{ $mensaje }}
+            </div>
+            @else
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -22,7 +26,6 @@
                         <th>Nombre</th>
                         <td>Descripción</td>
                         <td>Proveedor</td>
-                        <th>Stock</th>
                         <th>Precio</th>
                         <th>Subtotal</th>
                         <th>Cantidad</th>
@@ -30,27 +33,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($producto as $item)
+                    @foreach($productos as $item)
                         <tr>
                             <td>{{ $item['id'] }}</td>
                             <td>{{ $item['nombre'] }}</td>
                             <td>{{ $item['descripcion'] }}</td>
                             <td>{{ $item['proveedor_id'] }}</td>
-                            <td>{{ $item['cantidad'] }}</td>
                             <td>{{ $item['precio'] }}€</td>
-                            <td>€</td>
+                            <td>{{$item['subtotal']}}€</td>
                             <td>
-                                <form action="{{ route('cart.update', $item['id']) }}" method="POST">
+                                <form action="{{ route('cart.update', ['id' => $item['id']]) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-                                    <input type="number" name="cantidad" value="" size="3">
+                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" size="3" onchange="this.form.submit()">
                                 </form>
                             </td>
                             <td>
-                                <form action="{{ route('cart.destroy', $item['id']) }}" method="POST">
+                                <form id="delete-form" action="{{ route('cart.destroy', ['id' => $item['id']]) }}" method="POST">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    @method('delete')
+                                    <input type="submit" class="btn btn-danger" value="Eliminar">
                                 </form>
                             </td>
                         </tr>
@@ -58,18 +60,32 @@
 
                 </tbody>
             </table>
+            @endif
             <div class="row">
                 <div class="col-md-6">
                     <a href="/dashboard" class="btn btn-secondary">Seguir comprando</a>
                 </div>
                 <div class="col-md-6 text-end">
-                    <h4>Total: €</h4>
+                    <h4>Total: {{$total}}€</h4>
                     <a class="btn btn-primary" onclick="CompraRealizada()">Comprar</a>
                 </div>
             </div>
         </div>
     </body>
     <script>
+        // Obtener la cantidad de productos en el carrito
+        function CompraRealizada(){
+            var cartCount = {{ count($productos) }};
+
+            // Verificar si el carrito está vacío
+            if (cartCount === 0) {
+                // Mostrar alerta si el carrito está vacío
+                alert("El carrito está vacío");
+            } else {
+                // Mostrar alerta si el carrito tiene productos
+                alert("¡Compra realizada con éxito!");
+            }
+        }
 
     </script>
 </x-app-layout>

@@ -34,10 +34,10 @@ Route::get('/', function () {
 Route::get('/dashboard', 'App\Http\Controllers\Api\ProductoController@index')->name('dashboard');
 Route::get('/adminDashboard', [App\Http\Controllers\Api\ProductoController::class, 'index'])->name('adminDashboard');
 //carrito
-Route::post('/cart', [CartController::class, 'index'])->name('cart.store');
-Route::get('/cart', [CartController::class, 'store'])->name('cart.index');
-Route::put('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::put('/cart', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart', [CartController::class, 'destroy'])->name('cart.destroy');
 
 //productos
 Route::put('/productos/{id}', 'App\Http\Controllers\Api\ProductoController@update')->name('producto.update');
